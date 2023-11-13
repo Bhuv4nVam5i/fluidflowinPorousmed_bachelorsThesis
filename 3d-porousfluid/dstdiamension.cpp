@@ -1,16 +1,16 @@
 #include "dstdiamension.h"
 
 
-dst::Diamension::Diamension(const int rows, const int cols, const int depth) :
-	rows(rows), cols(cols), depth(depth) {}
+dst::Diamension::Diamension(const int depths ,const int rows, const int cols) :
+	depths(depth) , rows(rows), cols(cols) {}
 
-dst::Diamension::Diamension() : rows(0), cols(0), depth(0) {}
+dst::Diamension::Diamension() : depths(0) , rows(0), cols(0) {}
 
 
-std::pair<int, int> dst::Diamension::linear_node_at_ends_of_tube(const int row, const int col, const int depth) const
+std::pair<int, int> dst::Diamension::linear_node_at_ends_of_tube(const int depth ,const int row, const int col) const
 {
-	const int first_linear_node = this->linear_node_from_coordinate(row, col / 2 + (col % 2) * ((row + 1) % 2));
-	const int second_linear_node = this->linear_node_from_coordinate(row + 1, col / 2 + (col % 2) * (row % 2));
+	const int first_linear_node = this->linear_node_from_coordinate(depth ,(row + (row % 2)) / 2 , (col + (col % 2 )) / 2  );
+	const int second_linear_node = this->linear_node_from_coordinate(depth + 1 ,(row - (row % 2)) / 2, (col - (col % 2)) / 2);
 	return { first_linear_node, second_linear_node };
 }
 
@@ -22,14 +22,22 @@ int dst::Diamension::node_rows() const
 int dst::Diamension::node_cols(const int row) const
 {
 	return this->cols / 2 - (row % 2) + 1;
+
 }
+
+int dst::Diamension::node_depths(const int row) const
+{
+	return this->cols / 2 - (row % 2) + 1;
+
+}
+    
 
 int dst::Diamension::total_nodes() const
 {
 	return ((this->rows + 1) * (this->cols + 1) + 1) / 2;
 }
 
-int dst::Diamension::linear_node_from_coordinate(const int row, const int col) const
+int dst::Diamension::linear_node_from_coordinate(const int depth ,const int row, const int col) const
 {
 	return (row * (this->cols + 1) + (row % 2)) / 2 + col;
 }
@@ -37,7 +45,7 @@ int dst::Diamension::linear_node_from_coordinate(const int row, const int col) c
 
 bool dst::Diamension::operator== (const Diamension& other) const
 {
-	return (this->rows == other.rows) && (this->cols == other.cols);
+	return (this->rows == other.rows) && (this->cols == other.cols) && (this->depths == other.depths);
 }
 
 
@@ -62,6 +70,22 @@ std::vector<dst::Tube> dst::Diamension::generate_tubes_connected_to_node(int row
 	tubes_connected_vec[3].row = row;
 	tubes_connected_vec[3].col = 2 * col - 1 + row % 2;
 	tubes_connected_vec[3].linear_node = linear_node + cols / 2;
+
+	tubes_connected_vec[4].row = row;
+	tubes_connected_vec[4].col = 2 * col - 1 + row % 2;
+	tubes_connected_vec[4].linear_node = linear_node + cols / 2;
+
+	tubes_connected_vec[5].row = row;
+	tubes_connected_vec[5].col = 2 * col - 1 + row % 2;
+	tubes_connected_vec[5].linear_node = linear_node + cols / 2;
+
+	tubes_connected_vec[6].row = row;
+	tubes_connected_vec[6].col = 2 * col - 1 + row % 2;
+	tubes_connected_vec[6].linear_node = linear_node + cols / 2;
+
+	tubes_connected_vec[7].row = row;
+	tubes_connected_vec[7].col = 2 * col - 1 + row % 2;
+	tubes_connected_vec[7].linear_node = linear_node + cols / 2;
 
 
 	if (row % 2)
@@ -95,12 +119,12 @@ std::vector<dst::Tube> dst::Diamension::generate_tubes_connected_to_node(int row
 
 Tdouble dst::Diamension::empty_table() const
 {
-	return empty_table(this->rows, this->cols);
+	return empty_table(this->depths,this->rows, this->cols);
 }
 
-Tdouble dst::Diamension::empty_table(const int rows, const int cols) const
+Tdouble dst::Diamension::empty_table(const int depth, const int rows, const int cols) const
 {
-	return Tdouble(rows, std::vector<double>(cols));
+	return Tdouble(depth, std::vector<std::vector<double>>(rows, std::vector<double>(cols)));
 }
 
 Tdouble dst::Diamension::empty_aug_matrix() const
